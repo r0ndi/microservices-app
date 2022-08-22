@@ -10,7 +10,7 @@ pre-run: ## create and run rental containers
 	docker compose build --pull && docker compose up -d --force-recreate
 
 run: ## run application - use in container!
-	make -C shared/npm clean pack && \
+	make -C shared/npm clean pack
 	make -C modules/test-client clean run
 	make -C modules/api-gateway clean run
 

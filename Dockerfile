@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY . .
 
+# Linux
 RUN \
   apt-get update -y &&\
   apt-get install -y --no-install-recommends ca-certificates apt-transport-https curl &&\
@@ -18,7 +19,10 @@ RUN \
     postgresql-client \
     file \
     bash-completion \
-    zsh
+    zsh \
+    systemd python3-pip
 
+# Node
 RUN \
-  npm i -g npm@6.14.4
+  npm i -g pm2 npm@6.14.4
+
