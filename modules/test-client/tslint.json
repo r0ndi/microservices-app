@@ -7,7 +7,7 @@
     "semicolon": [true, "never"],
     "interface-name": [true, "never-prefix"],
     "object-literal-sort-keys": false,
-    "no-implicit-dependencies": [true, "dev"],
+    "no-implicit-dependencies": false,
     "no-submodule-imports": false,
     "ordered-imports": false,
     "no-empty": false,

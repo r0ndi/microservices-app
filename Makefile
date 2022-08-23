@@ -11,8 +11,13 @@ pre-run: ## create and run rental containers
 
 run: ## run application - use in container!
 	make -C shared/npm clean pack
-	make -C modules/test-client clean run
 	make -C modules/api-gateway clean run
+	make -C modules/authorization clean run
+	make -C modules/customer clean run
+	make -C modules/test-client clean run-test-client
+
+re-create: ## recreate applications - use in container!
+	pm2 kill && make run
 
 clean: ## create and run rental containers
 	docker compose down

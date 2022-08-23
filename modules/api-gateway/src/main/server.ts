@@ -1,18 +1,18 @@
 import * as express from 'express'
-import { ServerOptions } from './types/local'
 import * as bodyParser from 'body-parser'
 import * as cookieParser from 'cookie-parser'
+import { errorMiddleware } from './middlewares/error-middleware'
 import helmet from 'helmet'
 import { MqBridgeService } from './services/mq-bridge-service'
-import * as shared from 'shared-npm'
-import { errorMiddleware } from './middlewares/error-middleware'
+import { MQ } from 'shared-npm'
+import { ServerOptions } from './types/local'
 
 export class Server {
-    private readonly mq: shared.RabbitMQ.MQ
+    private readonly mq: MQ
     private readonly app: express.Application
     private readonly options: ServerOptions
 
-    public constructor(options: ServerOptions, mq: shared.RabbitMQ.MQ) {
+    public constructor(options: ServerOptions, mq: MQ) {
         this.options = options
         this.app = express()
         this.mq = mq

@@ -1,9 +1,8 @@
+import { Mongodb, MQ } from 'shared-npm'
+import Customer from './customer'
 import 'dotenv/config'
 
-import { MQ } from 'shared-npm'
-import { Server } from './server'
-
-const MODULE_NAME = 'api-gateway'
+const MODULE_NAME = 'customer'
 process.title = MODULE_NAME
 
 async function main() {
@@ -11,15 +10,16 @@ async function main() {
         throw up
     })
 
+    const mongodb = new Mongodb(process.env.MONGODB_DB_URL || '', MODULE_NAME)
     const mq = new MQ(MODULE_NAME, {
         hostname: process.env.RABBITMQ_HOSTNAME,
         port: process.env.RABBITMQ_PORT,
     })
+
+    const db = await mongodb.connect()
     await mq.connect()
 
-    const port = parseInt(process.env.NODE_SERVER_PORT || '', 0)
-    const server = new Server({ port }, mq)
-    server.listen()
+    await Customer(mq, db)
 }
 
 (async () => main())()

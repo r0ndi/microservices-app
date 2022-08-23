@@ -1,5 +1,5 @@
 import { Connection, Channel, connect, Options, ConsumeMessage } from 'amqplib'
-import { v4 } from 'uuid'
+import { UUID } from '../utils/uuid'
 
 export interface MQInterface {
     connect: () => Promise<any>
@@ -62,8 +62,9 @@ export class MQ implements MQInterface {
     }
 
     public publish = async <T>(route: string, payload: Payload = {}, trace: string[] = []): Promise<T> => {
+        console.log(`Publishing message on ${route}: ${JSON.stringify(payload)}`)
         const queueMessage = {
-            trace: [...trace, v4()],
+            trace: [...trace, UUID.generate()],
             payload,
         }
 
@@ -88,13 +89,14 @@ export class MQ implements MQInterface {
                     payload, correlationId: response.correlationId
                 }))
             } else {
+                console.log(`Received message on ${route}: ${JSON.stringify(response.payload)}`)
                 callback(response.payload, response.trace)
             }
         }, { noAck: true })
     }
 
     private publishWithResponse = async (route: string, payload: MQMessage): Promise<unknown> => {
-        const correlationId = v4()
+        const correlationId = UUID.generate()
         this.channel.publish(this.exchange, route, this.decodeMessage({ ...payload, correlationId }))
 
         return new Promise((resolve, reject) => {

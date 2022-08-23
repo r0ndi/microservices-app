@@ -14,6 +14,10 @@ run: ## -> build and start module
 	npm run build
 	pm2 start build/boot.js --name $(MODULE_NAME)
 
+upgrade: ## -> build and restart module
+	npm run build
+	pm2 restart build/boot.js --name $(MODULE_NAME)
+
 clean:
 	rm -rf build
 	rm -rf node_modules

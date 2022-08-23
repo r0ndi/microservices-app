@@ -1,10 +1,10 @@
-import * as shared from 'shared-npm'
-import { NextFunction, Request, Response } from 'express'
 import { allowedRoutes } from '../settings'
 import { HttpException } from '../exceptions/http-exception'
+import { NextFunction, Request, Response } from 'express'
+import { MQ } from 'shared-npm'
 import StatusCodes from 'http-status-codes'
 
-export function MqBridgeService(mq: shared.RabbitMQ.MQ) {
+export function MqBridgeService(mq: MQ) {
     return {
         postPatchProcess,
         getProcess,

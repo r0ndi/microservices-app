@@ -1,5 +1,4 @@
 import TestClient from './test-client'
-import * as shared from 'shared-npm'
 import 'dotenv/config'
 
 const MODULE_NAME = 'test-client'
@@ -10,13 +9,9 @@ async function main() {
         throw up
     })
 
-    const mq = new shared.RabbitMQ.MQ(MODULE_NAME, {
-        hostname: process.env.RABBITMQ_HOSTNAME,
-        port: process.env.RABBITMQ_PORT,
-    })
-
-    await mq.connect()
-    await TestClient(mq)
+    const apiUrl = process.env.API_URL || ''
+    const testClient = TestClient(apiUrl)
+    await testClient.createCustomer()
 }
 
 (async () => main())()

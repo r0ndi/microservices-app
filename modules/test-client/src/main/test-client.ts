@@ -1,20 +1,59 @@
-import { RabbitMQ } from 'shared-npm'
+import axios, { AxiosResponse } from 'axios'
 
-export default async function TestClient(mq: RabbitMQ.MQ) {
-    await mq.bind('event.test-client.test', eventTest)
-    await mq.bind('query.test-client.test', queryTest)
-    await mq.bind('command.test-client.test', commandTest)
+const randomStr = () => (Math.random() + 1).toString(36).substring(7)
 
-    async function eventTest(event: any): Promise<void> {
-        console.log('eventTest', event)
+const sampleCustomer = {
+    firstname: 'John',
+    lastname: 'Bravo',
+    email: `john.bravo.${randomStr()}@gmail.com`,
+    password: 'john!@#'
+}
+
+export default function TestClient(apiUrl: string) {
+    return {
+        createCustomer,
     }
 
-    async function commandTest(event: any): Promise<boolean> {
-        console.log('commandTest', event)
-        return true
+    async function createCustomer() {
+        await register()
+        await login()
+        await findUser()
     }
 
-    async function queryTest(event: any) {
-        return { firstname: 'Jony Bravo', lastname: 'Star', age: 15 }
+    async function register(): Promise<any> {
+        try {
+            const response: AxiosResponse = await axios.post(`${apiUrl}/mq/command.authorization.register`, { ...sampleCustomer })
+            console.log(`Register = ${response.status}: ${JSON.stringify(response.data)}`)
+            return response.data
+        } catch (error) {
+            console.log(`Error: ${error.message}`)
+        }
+    }
+
+    async function login(): Promise<any> {
+        try {
+            const response: AxiosResponse = await axios.post(`${apiUrl}/mq/command.authorization.login`, {
+                email: sampleCustomer.email,
+                password: sampleCustomer.password
+            })
+
+            console.log(`Login = ${response.status}: ${JSON.stringify(response.data)}`)
+            return response.data
+        } catch (error) {
+            console.log(`Error: ${error.message}`)
+        }
+    }
+
+    async function findUser(): Promise<any> {
+        try {
+            const response: AxiosResponse = await axios.post(`${apiUrl}/mq/query.customer.search`, {
+                email: sampleCustomer.email,
+            })
+
+            console.log(`Find user = ${response.status}: ${JSON.stringify(response.data)}`)
+            return response.data
+        } catch (error) {
+            console.log(`Error: ${error.message}`)
+        }
     }
 }

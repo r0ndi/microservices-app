@@ -1,5 +1,6 @@
 export const allowedRoutes = [
-    'event.test-client.test',
-    'query.test-client.test',
-    'command.test-client.test',
+    'command.customer.create',
+    'query.customer.search',
+    'command.authorization.register',
+    'command.authorization.login',
 ]
