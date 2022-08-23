@@ -11,7 +11,7 @@ async function main() {
     })
 
     const tokenSecret = process.env.TOKEN_SECRET || ''
-    const passwordSalt = parseInt(process.env.PASSWORD_SALT || '')
+    const passwordSalt = parseInt(process.env.PASSWORD_SALT || '', 10)
     const mongodb = new Mongodb(process.env.MONGODB_DB_URL || '', MODULE_NAME)
     const mq = new MQ(MODULE_NAME, {
         hostname: process.env.RABBITMQ_HOSTNAME,

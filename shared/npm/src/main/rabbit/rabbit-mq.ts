@@ -82,6 +82,7 @@ export class MQ implements MQInterface {
 
         await this.channel.consume(queue, async (message: ConsumeMessage) => {
             const response = this.encodeMessage(message.content)
+            console.log(`Received message on ${route}: ${JSON.stringify(response.payload)}`)
 
             if (response.correlationId) {
                 const payload = await callback(response.payload, response.trace)
@@ -89,7 +90,6 @@ export class MQ implements MQInterface {
                     payload, correlationId: response.correlationId
                 }))
             } else {
-                console.log(`Received message on ${route}: ${JSON.stringify(response.payload)}`)
                 callback(response.payload, response.trace)
             }
         }, { noAck: true })
@@ -106,6 +106,7 @@ export class MQ implements MQInterface {
             }, this.timeout)
 
             this.responseListeners[correlationId] = (response: any) => {
+                console.log(`Response message on ${route}: ${JSON.stringify(response)}`)
                 delete this.responseListeners[correlationId]
                 clearTimeout(timeout)
 

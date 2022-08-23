@@ -7,10 +7,23 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - 27017:27017
     volumes:
       - ./resources/db:/data/db
     networks:
       - mcs-app
+
+  mongo-client:
+    image: mongoclient/mongoclient:latest
+    container_name: mongoclient
+    hostname: mongoclient
+    depends_on:
+      - mongo
+    networks:
+      - mcs-app
+    ports:
+      - 3300:3000
 
   rabbitmq:
     image: rabbitmq:3-management-alpine
@@ -34,7 +47,6 @@ services:
       - mcs-app
     ports:
       - 4001:4001
-      - 4002:4002
     tty: true
 
 networks:
