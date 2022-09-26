@@ -1,6 +1,12 @@
 import { Db } from 'mongodb'
 import { MQ } from 'shared-npm'
-import { CustomerCreatedEvent, RegisterEvent, AuthorizationEventResponse, LoginEvent } from './types/events'
+import {
+    CustomerCreatedEvent,
+    RegisterEvent,
+    AuthorizationEventResponse,
+    LoginEvent,
+    EventResponse,
+} from './types/events'
 import { AuthorizationValidator } from './validations/authorization-validator'
 import { Customer } from './types/db'
 import * as bcryptjs from 'bcryptjs'
@@ -14,7 +20,7 @@ export default async function Authorization(mq: MQ, db: Db, passwordSalt: number
     await mq.bind('command.authorization.login', commandAuthorizationLogin)
     await mq.bind('event.customer.create.success', eventCustomerCreateSuccess)
 
-    async function commandAuthorizationRegister(event: RegisterEvent, trace: string[]): Promise<AuthorizationEventResponse> {
+    async function commandAuthorizationRegister(event: RegisterEvent, trace: string[]): Promise<EventResponse> {
         const validationResult = await AuthorizationValidator.registerEvent(customersCollection, event)
         if (validationResult.length) {
             await mq.publish('event.authorization.register.error', { error: validationResult[0].error }, trace)
@@ -23,12 +29,8 @@ export default async function Authorization(mq: MQ, db: Db, passwordSalt: number
 
         const hashedPassword = await bcryptjs.hash(event.password, passwordSalt)
         const createStatus = await mq.publish('command.customer.create', { ...event, password: hashedPassword })
-        if (!createStatus) {
-            return { success: false }
-        }
 
-        const token = jwt.sign({ email: event.email }, tokenSecret, { expiresIn: 60 * 60 * 24 })
-        return { success: true, token }
+        return { success: createStatus }
     }
 
     async function commandAuthorizationLogin(event: LoginEvent, trace: string[]): Promise<AuthorizationEventResponse> {
@@ -38,7 +40,7 @@ export default async function Authorization(mq: MQ, db: Db, passwordSalt: number
             return { success: false }
         }
 
-        const customer = await customersCollection.findOne({ email: event.email })
+        const customer = await customersCollection.findOne<Customer>({ email: event.email })
         if (!customer) {
             await mq.publish('event.authorization.login.error', { error: LoginError.WRONG_CREDENTIALS }, trace)
             return { success: false }
@@ -51,7 +53,7 @@ export default async function Authorization(mq: MQ, db: Db, passwordSalt: number
         }
 
         await mq.publish('event.authorization.login.success', { customerId: customer.id })
-        const token = jwt.sign({ email: event.email }, tokenSecret, { expiresIn: 60 * 60 * 24 })
+        const token = jwt.sign({ id: customer.id }, tokenSecret, { expiresIn: 60 * 60 * 24 })
         return { success: true, token }
     }
 

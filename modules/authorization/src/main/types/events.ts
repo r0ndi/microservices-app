@@ -5,8 +5,11 @@ export interface RegisterEvent {
     password: string
 }
 
-export interface AuthorizationEventResponse {
+export interface EventResponse {
     success: boolean
+}
+
+export interface AuthorizationEventResponse extends EventResponse {
     token?: string
 }
 
