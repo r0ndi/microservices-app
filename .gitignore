@@ -1,0 +1,9 @@
+.idea
+resources
+**/node_modules
+**/build
+*.tgz
+.DS_Store
+
+!resources/.gitkeep
+!resources/db/.gitkeep

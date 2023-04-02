@@ -1,0 +1,28 @@
+{
+  "name": "customer-module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "build/boot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\"",
+    "lint": "./node_modules/.bin/tslint -p tsconfig.json --fix",
+    "build": "./node_modules/typescript/bin/tsc"
+  },
+  "author": "Konrad Sądel",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.0.1",
+    "moment": "^2.29.4",
+    "ramda": "^0.28.0",
+    "shared-npm": "file:../../shared/npm/shared-npm-1.0.0.tgz"
+  },
+  "devDependencies": {
+    "@types/moment": "^2.13.0",
+    "@types/mongodb": "^4.0.7",
+    "@types/node": "^18.7.6",
+    "@types/ramda": "^0.28.15",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0",
+    "typescript": "^4.7.4"
+  }
+}

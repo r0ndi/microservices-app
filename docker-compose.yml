@@ -1,0 +1,56 @@
+version: "3"
+services:
+  mongo:
+    container_name: mcs-app-mongo
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+    ports:
+      - 27017:27017
+    volumes:
+      - ./resources/db:/data/db
+    networks:
+      - mcs-app
+
+  mongo-client:
+    image: mongoclient/mongoclient:latest
+    container_name: mongoclient
+    hostname: mongoclient
+    depends_on:
+      - mongo
+    networks:
+      - mcs-app
+    ports:
+      - 3300:3000
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672
+      - 15672:15672
+    networks:
+      - mcs-app
+
+  app:
+    container_name: base-app
+    volumes:
+      - .:/app
+    build:
+      context: .
+    depends_on:
+      - mongo
+      - rabbitmq
+    networks:
+      - mcs-app
+    ports:
+      - 4001:4001
+      - 4002:4002
+      - 3000:3000
+    tty: true
+
+networks:
+  mcs-app:
+    driver: bridge
